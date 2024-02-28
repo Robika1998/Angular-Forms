@@ -1,0 +1,8 @@
+.has-error {
+    border-color: rgb(246, 183, 188);
+    box-shadow: 0 0 0 0.25rem rgb(227, 138, 138);
+    &:focus {
+        border-color: rgb(245, 173, 179);
+        box-shadow: 0 0 0 0.25rem rgb(235, 133, 133);
+    }
+}
