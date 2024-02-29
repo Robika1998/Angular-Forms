@@ -26,6 +26,9 @@ interface items {
 })
 export class AppComponent {
 
+  totalAmount: number = 0;
+  totalTaxes: number = 0;
+
   itemsTitles = [
     'Category',
     'Items',
@@ -61,6 +64,73 @@ export class AppComponent {
 
   submitForm(myForm: NgForm) {
      console.log(myForm);
+     console.log(this.localItems);
+     
      
   }
+
+  addCategory() {
+     this.localItems.push(
+      {
+        id: -(new Date().getTime()),
+        name: 'Category',
+        items: [{
+          id: -(new Date().getTime()),
+          name: 'Item',
+          glCode: 0,
+          amount: 0,
+          salesTax: {id: 0, title: '', value: 0},
+        }]
+      }
+     );
+  }
+
+  removeCategory(id: number) {
+    const idx = this.localItems.findIndex((item) => item.id === id)
+    if (idx !== -1) {
+      this.localItems.splice(idx, 1)
+    }
+  }
+
+  addItemToCategory(id: number) {
+     this.localItems.find((item) => {
+      if (item.id === id) {
+        item.items.push({
+          id: -(new Date().getTime()),
+          name: 'Item',
+          glCode: 0,
+          amount: 0,
+          salesTax: {id: 0, title: '', value: 0},
+        });
+      }
+     });
+  }
+
+  removeItemFromCategory(catId: number, itemId: number) {
+    this.localItems.find((item) => {
+      const idx = item['items'].findIndex((item) => item.id === itemId);
+      if (idx !== -1) {
+        item['items'].splice(idx, 1)
+      }
+    })
+
 }
+
+getTotalAmount(isAmount: boolean) {
+  let total = 0;
+
+  this.localItems.forEach((item) => {
+    total = item.items.reduce((acc, curr) => {
+      if (isAmount) {
+        return acc + +curr.amount;
+      }
+      return acc + +curr.salesTax.value;
+    }, total);
+  });
+
+  if (isAmount) this.totalAmount = total;
+  else this.totalTaxes = total;
+}
+
+}
+

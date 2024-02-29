@@ -15,7 +15,7 @@
           <thead>
             <tr>
               <th *ngFor="let title of itemsTitles">{{title}}</th>
-              <td><button class="btn btn-primary">Add Category</button></td>
+              <td><button class="btn btn-primary" (click)="addCategory()">Add Category</button></td>
             </tr>
           </thead>
           <tbody *ngFor="let item of localItems">
@@ -26,8 +26,9 @@
                </td>
                <td colspan="5"></td>
                <td title="Add Item / Remove Category">
-                <button class="btn btn-primary">Add Item</button>
-                <button [disabled]="localItems.length <= 1" class="btn btn-danger">Remove Category</button>
+                <button class="btn btn-primary" (click)="addItemToCategory(item.id)">Add Item</button>
+                <button [disabled]="localItems.length <= 1" class="btn btn-danger"
+                 (click)="removeCategory(item.id)">Remove Category</button>
                </td>
                </tr>
                <tr *ngFor="let items of item['items']">
@@ -42,12 +43,12 @@
                  </td>
                  <td title="Amount">
                   <input [ngClass]="{'has-error': amount.invalid}" class="form-control" type="text" 
-                  name="amount{{items.id}}" [(ngModel)]="items.amount" pattern="^[0-9]+$" #amount="ngModel" required />
+                  name="amount{{items.id}}" [(ngModel)]="items.amount" (ngModelChange)="getTotalAmount(true)" pattern="^[0-9]+$" #amount="ngModel" required />
                  </td>
 
                  <td title="Sales Tax">
                     <select class="form-control" [ngClass]="{'has-error': salesTax.invalid}" class="form-control" type="text" 
-                    name="salesTax{{items.id}}" [(ngModel)]="items.salesTax" #salesTax="ngModel" required >
+                    name="salesTax{{items.id}}" [(ngModel)]="items.salesTax" #salesTax="ngModel" (ngModelChange)="getTotalAmount(false)" required >
                        <option *ngFor="let tax of salesTaxArray" [ngValue]="tax">
                         {{tax.title}}
                     </option>
@@ -55,7 +56,7 @@
                   {{items.salesTax?.value | currency}}
                  </td>
                  <td title="Total">{{+items.amount + items.salesTax.value | currency}}</td>
-                 <td title="Remove"><button [disabled]="item['items'].length <= 1" class="btn btn-danger">Remove Item</button></td>
+                 <td title="Remove"><button (click)="removeItemFromCategory(item.id, items.id)" [disabled]="item['items'].length <= 1" class="btn btn-danger">Remove Item</button></td>
               </tr>
           </tbody>
           <tfoot>
@@ -64,12 +65,15 @@
                 <td title="Total">
                   <strong>Total</strong>
                 </td>
-                <td title="Amount">1</td>
-                <td title="Sales Tax">2</td>
-                <td title="Total">3</td>
+                <td title="Amount">{{totalAmount | currency}}</td>
+                <td title="Sales Tax">{{totalTaxes | currency}}</td>
+                <td title="Total">{{totalAmount + totalTaxes | currency}}</td>
               </tr>
           </tfoot>
         </table>
       </div>
+      <div class="row">
+        <button (click)="submitForm(myForm)" class="btn btn-primary">Submit</button>
+       </div>
   </form>
 </div>
